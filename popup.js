@@ -1,12 +1,5 @@
-// adding a new bookmark row to the popup
-const addNewBookmark = () => {};
-
-const viewBookmarks = () => {};
-
-const onPlay = e => {};
-
-const onDelete = e => {};
-
-const setBookmarkAttributes =  () => {};
-
-document.addEventListener("DOMContentLoaded", () => {});
+const toggleButton = document.getElementById('toggle');
+toggleButton.addEventListener('click', () => {
+  toggleButton.innerText = toggleButton.innerText === 'Enable' ? 'Disable' : 'Enable';
+  toggleButton.classList.toggle('enabled');
+});
