@@ -4,7 +4,19 @@
   "description": "A simple Chrome extension to show only spoken dialogues",
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "scripting",
+    "webNavigation"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "test.vtt"
+      ],
+      "matches": [
+        "https://*.disneyplus.com/*"
+      ]
+    }
   ],
   "host_permissions": [
     "https://*/*"
