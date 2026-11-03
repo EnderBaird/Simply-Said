@@ -22,8 +22,13 @@
   const observer = new MutationObserver(() => {
     const subtitleElement = region.shadowRoot.querySelector(".hive-subtitle-renderer-wrapper");
     if (subtitleElement) {
-      // console.log(`Simply Said: subtitleElement is ${subtitleElement.textContent}`);
-      console.log(`Simply Said: cleaned subtitleElement is ${cleanSubtitleText(subtitleElement.textContent)}`);
+      let allSubtitles = subtitleElement.querySelectorAll(".hive-subtitle-renderer-line")
+      for (const subtitle of allSubtitles) {
+        if (subtitle.textContent !== cleanSubtitleText(subtitle.textContent)) {
+          console.log("Simply Said: Subtitle text updated:", subtitle.textContent);
+          subtitle.textContent = cleanSubtitleText(subtitle.textContent);
+        }
+      }
     }
   });
   let region = document.querySelector("timed-text-override-region");
@@ -93,7 +98,8 @@
   }
   function cleanSubtitleText(text) {
     const cleaned = text.replace(/\([^)]*\)/g, "").trim();
-    return cleaned;
+    const cleanedWithoutNames = cleaned.replace(/^[A-Z][A-Z0-9 '-]*:/gm, "").trim();
+    return cleanedWithoutNames;
   }
 })();
 
