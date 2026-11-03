@@ -8,6 +8,7 @@ function startSimplySaid(details) {
   console.log(
     "Simply Said start requested:",
   );
+  // Check if the URL is a Disney+ play page and if it's the main frame
   if (details.url.includes("disneyplus.com/play") && details.frameId === 0) {
     chrome.scripting.executeScript({
       target: { tabId: details.tabId },
@@ -39,7 +40,7 @@ function startSimplySaid(details) {
             const playheadPositionMs =
               state.timeline?.timeline?.playheadPositionMs;
 
-            console.log("Simply Said TIME:", playheadPositionMs);
+            window.postMessage({ type: "SIMPLY_SAID_TIME_UPDATE", currentTime: playheadPositionMs }, "*");
           });
 
           console.log("Simply Said: READY!");
@@ -56,6 +57,19 @@ function startSimplySaid(details) {
           childList: true,
           subtree: true
         });
+        function XMLHttpRequestOpenReplacement(method, url) {
+          const parsedUrl = new URL(url, document.baseURI);
+          if (parsedUrl.pathname.endsWith(".vtt")) {
+            this.addEventListener("load", () => {
+              console.log("Simply Said: VTT loaded:", url);
+              const vttText = this.responseText;
+              window.postMessage({ type: "SIMPLY_SAID_VTT", url, vttText }, "*");
+            });
+          }
+          return originalOpen.apply(this, arguments);
+        }
+        const originalOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = XMLHttpRequestOpenReplacement;
       }
     });
   }
