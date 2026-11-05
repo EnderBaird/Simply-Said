@@ -1,10 +1,57 @@
-<link href="popup.css" rel="stylesheet" type="text/css" />
-<script type="module" src="popup.js" defer></script>
-
-<body>
-  <h1>Simply Said</h1>
-  <p>Show only what's being said.</p>
-
-  <button id="toggle">Enable</button>
-
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simply Said</title>
+    <link href="popup.css" rel="stylesheet" />
+    <script type="module" src="popup.js"></script>
+  </head>
+  <body>
+    <header class="brand">
+      <img class="brand-mark" src="assets/icon128.png" alt="" width="42" height="42" />
+      <div>
+        <h1>Simply Said<span class="brand-dot">.</span></h1>
+        <p>Less noise. More dialogue.</p>
+      </div>
+    </header>
+    <main>
+      <section class="power-card" aria-labelledby="power-title">
+        <h2 id="power-title">Make room for the words.</h2>
+        <p>Your captions, a little clearer.</p>
+        <button id="toggle" type="button">Enable</button>
+      </section>
+      <section class="filters" aria-labelledby="filters-title">
+        <div class="section-heading">
+          <h2 id="filters-title">Make it yours</h2>
+          <span>CAPTION FILTERS</span>
+        </div>
+        <div class="filter-list">
+          <label class="filter-row" for="soundRemoval">
+            <span class="filter-copy">
+              <span class="filter-title">Sound descriptions</span>
+              <span class="filter-description">Hide sounds and non-spoken cues.</span>
+              <span class="example">(LAUGHS) · [DOOR SLAMS]</span>
+            </span>
+            <input class="switch-input" id="soundRemoval" type="checkbox" />
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
+          <label class="filter-row" for="nameRemoval">
+            <span class="filter-copy">
+              <span class="filter-title">Speaker names</span>
+              <span class="filter-description">Hide labels. Keep the dialogue.</span>
+              <span class="example">HELEN: <span class="example-dialogue">Hey, honey.</span></span>
+            </span>
+            <input class="switch-input" id="nameRemoval" type="checkbox" />
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
+        </div>
+      </section>
+      <aside class="tip">
+        <span class="tip-icon" aria-hidden="true">i</span>
+        <p>Keep Disney+ subtitles on. Simply Said cleans them up while keeping your caption style.</p>
+      </aside>
+    </main>
+    <footer>Just the words. Still your style.</footer>
+  </body>
+</html>
