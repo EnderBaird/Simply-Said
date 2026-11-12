@@ -42,27 +42,6 @@
   function startNetflix() {
     disneyplus = false;
     netflix = true;
-    function processNetflixSubtitles() {
-      console.log("Simply Said: MutationObserver triggered for Netflix");
-      const subtitleElement = document.querySelector(".player-timedtext");
-      if (subtitleElement) {
-        console.log("Subtitle container found:", Boolean(subtitleElement));
-        let allSubtitles = subtitleElement.querySelectorAll("span")
-        for (const subtitle of allSubtitles) {
-          if (subtitle.querySelector("span")) {
-            continue;
-          }
-          const before = subtitle.textContent;
-          const after = cleanSubtitleText(before);
-
-          if (before !== after) {
-            console.log("Simply Said: Before:", JSON.stringify(before));
-            console.log("Simply Said: After:", JSON.stringify(after));
-            subtitle.textContent = after;
-          }
-        }
-      }
-    }
     //listen for updates to the DOM, specifically the .player-timedtext element, and log a message when it is found
     const observer = new MutationObserver(processNetflixSubtitles);
     let subtitleElement = document.querySelector(".player-timedtext");
@@ -95,17 +74,6 @@
   function startDisney() {
     disneyplus = true;
     netflix = false;
-    function processDisneySubtitles() {
-      const subtitleElement = region.shadowRoot.querySelector(".hive-subtitle-renderer-wrapper");
-      if (subtitleElement) {
-        let allSubtitles = subtitleElement.querySelectorAll(".hive-subtitle-renderer-line")
-        for (const subtitle of allSubtitles) {
-          if (subtitle.textContent !== cleanSubtitleText(subtitle.textContent)) {
-            subtitle.textContent = cleanSubtitleText(subtitle.textContent);
-          }
-        }
-      }
-    }
     //listen for updates to the DOM, specifically the timed-text-override-region element, and log a message when it is found
     const observer = new MutationObserver(processDisneySubtitles);
     let region = document.querySelector("timed-text-override-region");
@@ -152,6 +120,42 @@
       }
     }
     return textToClean;
+  }
+  function processNetflixSubtitles() {
+    console.log("Simply Said: MutationObserver triggered for Netflix");
+    const subtitleElement = document.querySelector(".player-timedtext");
+    if (subtitleElement) {
+      console.log("Subtitle container found:", Boolean(subtitleElement));
+      let allSubtitles = subtitleElement.querySelectorAll("span")
+      for (const subtitle of allSubtitles) {
+        if (subtitle.querySelector("span")) {
+          continue;
+        }
+        const before = subtitle.textContent;
+        const after = cleanSubtitleText(before);
+
+        if (before !== after) {
+          console.log("Simply Said: Before:", JSON.stringify(before));
+          console.log("Simply Said: After:", JSON.stringify(after));
+          subtitle.textContent = after;
+        }
+      }
+    }
+  }
+  function processDisneySubtitles() {
+    const region = document.querySelector("timed-text-override-region");
+    if (!region?.shadowRoot) {
+      return;
+    }
+    const subtitleElement = region.shadowRoot.querySelector(".hive-subtitle-renderer-wrapper");
+    if (subtitleElement) {
+      let allSubtitles = subtitleElement.querySelectorAll(".hive-subtitle-renderer-line")
+      for (const subtitle of allSubtitles) {
+        if (subtitle.textContent !== cleanSubtitleText(subtitle.textContent)) {
+          subtitle.textContent = cleanSubtitleText(subtitle.textContent);
+        }
+      }
+    }
   }
 })();
 
