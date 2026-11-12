@@ -3,31 +3,13 @@
   "version": "0.1.0",
   "description": "A simple Chrome extension to show only spoken dialogues",
   "permissions": [
-    "storage",
-    "tabs",
-    "scripting",
-    "webNavigation"
+    "storage"
   ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "test.vtt"
-      ],
-      "matches": [
-        "https://*.disneyplus.com/*"
-      ]
-    }
-  ],
-  "host_permissions": [
-    "https://*/*"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
   "content_scripts": [
     {
       "matches": [
-        "https://*/*"
+        "https://www.disneyplus.com/*",
+        "https://www.netflix.com/*"
       ],
       "js": [
         "contentScript.js"

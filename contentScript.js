@@ -5,11 +5,22 @@
     nameRemoval: false,
     soundRemoval: false
   });
+  let disneyplus = false;
+  let netflix = false;
+  //check if the extension is enabled and log a message to the console
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "local") {
       if (changes.enabled) {
         settings.enabled = changes.enabled.newValue;
         console.log(`Simply Said: Extension is now ${settings.enabled ? 'enabled' : 'disabled'}.`);
+        if (disneyplus) {
+          console.log("Simply Said: Disney+ detected");
+          processDisneySubtitles();
+        }
+        if (netflix) {
+          console.log("Simply Said: Netflix detected");
+          processNetflixSubtitles();
+        }
       }
       if (changes.soundRemoval) {
         settings.soundRemoval = changes.soundRemoval.newValue;
@@ -29,8 +40,9 @@
     console.log("Simply Said: Netflix detected, starting subtitle cleaning.");
   }
   function startNetflix() {
-    //listen for updates to the DOM, specifically the .player-timedtext element, and log a message when it is found
-    const observer = new MutationObserver(() => {
+    disneyplus = false;
+    netflix = true;
+    function processNetflixSubtitles() {
       console.log("Simply Said: MutationObserver triggered for Netflix");
       const subtitleElement = document.querySelector(".player-timedtext");
       if (subtitleElement) {
@@ -50,27 +62,40 @@
           }
         }
       }
-    });
-    const tempObserver = new MutationObserver(() => {
-      const subtitleElement = document.querySelector(".player-timedtext");
-      if (subtitleElement) {
-        console.log("Simply Said: .player-timedtext found in tempObserver");
-        observer.observe(subtitleElement, {
-          childList: true,
-          characterData: true,
-          subtree: true
-        });
-        tempObserver.disconnect();
-      }
-    });
-    tempObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    }
+    //listen for updates to the DOM, specifically the .player-timedtext element, and log a message when it is found
+    const observer = new MutationObserver(processNetflixSubtitles);
+    let subtitleElement = document.querySelector(".player-timedtext");
+    function tryAttachObserver() {
+      observer.observe(subtitleElement, {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+    }
+
+    if (subtitleElement) {
+      console.log("Simply Said: .player-timedtext found in startNetflix");
+      tryAttachObserver();
+    } else {
+      const tempObserver = new MutationObserver(() => {
+        subtitleElement = document.querySelector(".player-timedtext");
+        if (subtitleElement) {
+          console.log("Simply Said: .player-timedtext found in tempObserver");
+          tryAttachObserver();
+          tempObserver.disconnect();
+        }
+      });
+      tempObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
   function startDisney() {
-    //listen for updates to the DOM, specifically the timed-text-override-region element, and log a message when it is found
-    const observer = new MutationObserver(() => {
+    disneyplus = true;
+    netflix = false;
+    function processDisneySubtitles() {
       const subtitleElement = region.shadowRoot.querySelector(".hive-subtitle-renderer-wrapper");
       if (subtitleElement) {
         let allSubtitles = subtitleElement.querySelectorAll(".hive-subtitle-renderer-line")
@@ -80,25 +105,36 @@
           }
         }
       }
-    });
+    }
+    //listen for updates to the DOM, specifically the timed-text-override-region element, and log a message when it is found
+    const observer = new MutationObserver(processDisneySubtitles);
     let region = document.querySelector("timed-text-override-region");
-    // a temporary observer to wait for the timed-text-override-region to be added to the DOM
-    const tempObserver = new MutationObserver(() => {
-      region = document.querySelector("timed-text-override-region");
-      if (region?.shadowRoot) {
-        console.log("Simply Said: timed-text-override-region found in tempObserver");
-        observer.observe(region.shadowRoot, {
-          childList: true,
-          characterData: true,
-          subtree: true
-        });
-        tempObserver.disconnect();
-      }
-    });
-    tempObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    function tryAttachObserver() {
+      observer.observe(region.shadowRoot, {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+    }
+
+    if (region?.shadowRoot) {
+      console.log("Simply Said: timed-text-override-region found in startDisney");
+      tryAttachObserver();
+    } else {
+      // Wait for the caption region and its shadow root to become available.
+      const tempObserver = new MutationObserver(() => {
+        region = document.querySelector("timed-text-override-region");
+        if (region?.shadowRoot) {
+          console.log("Simply Said: timed-text-override-region found in tempObserver");
+          tryAttachObserver();
+          tempObserver.disconnect();
+        }
+      });
+      tempObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
   function cleanSubtitleText(text) {
     let textToClean = text;
